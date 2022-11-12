@@ -16,7 +16,7 @@ type Token struct {
 	Signature   string `json:"signature"`
 }
 
-func (service *Service) GetToken() (*Token, *errortools.Error) {
+func (service *Service) getToken() (*Token, *errortools.Error) {
 	formData := struct {
 		GrantType    string `json:"grant_type"`
 		Username     string `json:"username"`
@@ -31,17 +31,19 @@ func (service *Service) GetToken() (*Token, *errortools.Error) {
 		service.clientSecret,
 	}
 
-	var header http.Header
-	header.Set("Content-Type", "x-www-form-urlencoded")
+	header := http.Header{}
+	header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	var token Token
 
+	t := true
 	requestConfig := go_http.RequestConfig{
-		Method:            http.MethodPost,
-		Url:               "https://login.salesforce.com/services/oauth2/token",
-		BodyModel:         formData,
-		NonDefaultHeaders: &header,
-		ResponseModel:     &token,
+		Method:             http.MethodPost,
+		Url:                loginUrl,
+		XWwwFormUrlEncoded: &t,
+		BodyModel:          formData,
+		NonDefaultHeaders:  &header,
+		ResponseModel:      &token,
 	}
 
 	_, _, e := service.httpService.HttpRequest(&requestConfig)

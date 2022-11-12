@@ -2,28 +2,30 @@ package hr2day
 
 import (
 	"fmt"
-	"net/http"
-	"net/url"
-
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
+	"net/http"
 )
 
 const (
-	apiName string = "HR2day"
-	apiURL  string = "https://api.neverbounce.com/v4"
+	apiName  string = "HR2day"
+	loginUrl string = "https://login.salesforce.com/services/oauth2/token"
+	queryUrl string = "https://%s.cloudforce.com/services/data/v56.0/query"
 )
 
 type Service struct {
+	domain        string
 	username      string
 	password      string
 	securityToken string
 	clientId      string
 	clientSecret  string
 	httpService   *go_http.Service
+	token         *Token
 }
 
 type ServiceConfig struct {
+	Domain        string
 	Username      string
 	Password      string
 	SecurityToken string
@@ -42,6 +44,7 @@ func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
 	}
 
 	return &Service{
+		domain:        serviceConfig.Domain,
 		username:      serviceConfig.Username,
 		password:      serviceConfig.Password,
 		securityToken: serviceConfig.SecurityToken,
@@ -51,20 +54,21 @@ func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
 	}, nil
 }
 
-func (service *Service) url(path string) string {
-	return fmt.Sprintf("%s/%s", apiURL, path)
-}
-
 func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	// add Api key
-	_url, err := url.Parse(requestConfig.Url)
-	if err != nil {
-		return nil, nil, errortools.ErrorMessage(err)
-	}
-	query := _url.Query()
-	//query.Set("key", service.clientId)
+	if service.token == nil {
+		token, e := service.getToken()
+		if e != nil {
+			return nil, nil, e
+		}
 
-	(*requestConfig).Url = fmt.Sprintf("%s://%s%s?%s", _url.Scheme, _url.Host, _url.Path, query.Encode())
+		service.token = token
+	}
+
+	// add access token to header
+	if requestConfig.NonDefaultHeaders == nil {
+		requestConfig.NonDefaultHeaders = &http.Header{}
+	}
+	requestConfig.NonDefaultHeaders.Set("Authorization", fmt.Sprintf("Bearer %s", service.token.AccessToken))
 
 	return service.httpService.HttpRequest(requestConfig)
 }
