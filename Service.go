@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	apiName  string = "HR2day"
-	loginUrl string = "https://login.salesforce.com/services/oauth2/token"
-	queryUrl string = "https://%s.cloudforce.com/services/data/v56.0/query"
+	apiName   string = "HR2day"
+	loginUrl  string = "https://login.salesforce.com/services/oauth2/token"
+	baseUrl   string = "https://%s.cloudforce.com"
+	queryPath string = "/services/data/v56.0/query"
 )
 
 type Service struct {

@@ -15,6 +15,7 @@ type Employee struct {
 	CreatedDate           *h_types.DateTimeMsString `json:"CreatedDate"`
 	CreatedById           string                    `json:"CreatedById"`
 	LastModifiedDate      *h_types.DateTimeMsString `json:"LastModifiedDate"`
+	LastModifiedById      string                    `json:"LastModifiedById"`
 	SystemModstamp        *h_types.DateTimeMsString `json:"SystemModstamp"`
 	LastActivityDate      *h_types.DateTimeMsString `json:"LastActivityDate"`
 	LastViewedDate        *h_types.DateTimeMsString `json:"LastViewedDate"`

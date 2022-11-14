@@ -10,28 +10,48 @@ import (
 )
 
 type queryResponse struct {
-	TotalSize int64           `json:"totalSize"`
-	Done      bool            `json:"done"`
-	Records   json.RawMessage `json:"records"`
+	TotalSize      int64             `json:"totalSize"`
+	Done           bool              `json:"done"`
+	NextRecordsUrl string            `json:"nextRecordsUrl"`
+	Records        []json.RawMessage `json:"records"`
 }
 
 func (service *Service) query(query string, model interface{}) *errortools.Error {
 	values := url.Values{}
 	values.Set("q", query)
 
-	var qr queryResponse
-	requestConfig := go_http.RequestConfig{
-		Method:        http.MethodGet,
-		Url:           fmt.Sprintf("%s?%s", fmt.Sprintf(queryUrl, service.domain), values.Encode()),
-		ResponseModel: &qr,
+	url := fmt.Sprintf("%s%s?%s", fmt.Sprintf(baseUrl, service.domain), queryPath, values.Encode())
+
+	var records []json.RawMessage
+
+	for {
+		var qr queryResponse
+		requestConfig := go_http.RequestConfig{
+			Method:        http.MethodGet,
+			Url:           url,
+			ResponseModel: &qr,
+		}
+
+		_, _, e := service.httpRequest(&requestConfig)
+		if e != nil {
+			return e
+		}
+
+		records = append(records, qr.Records...)
+
+		if qr.NextRecordsUrl == "" {
+			break
+		}
+
+		url = fmt.Sprintf("%s%s", fmt.Sprintf(baseUrl, service.domain), qr.NextRecordsUrl)
 	}
 
-	_, _, e := service.httpRequest(&requestConfig)
-	if e != nil {
-		return e
+	b, err := json.Marshal(records)
+	if err != nil {
+		return errortools.ErrorMessage(err)
 	}
 
-	err := json.Unmarshal(qr.Records, model)
+	err = json.Unmarshal(b, model)
 	if err != nil {
 		return errortools.ErrorMessage(err)
 	}
