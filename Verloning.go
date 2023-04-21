@@ -30,6 +30,7 @@ type Verloning struct {
 	Hr2dayPeriodeNr      float64                   `json:"hr2d__PeriodeNr__c"`
 	Hr2dayPeriodeNrIn    float64                   `json:"hr2d__PeriodeNr_in__c"`
 	Hr2dayPeriode        string                    `json:"hr2d__Periode__c"`
+	Hr2dayUren           float64                   `json:"hr2d__Uren__c"`
 	Hr2dayUurloon        float64                   `json:"hr2d__Uurloon__c"`
 }
 
