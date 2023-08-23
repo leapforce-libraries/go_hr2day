@@ -20,7 +20,7 @@ func (service *Service) query(query string, model interface{}) *errortools.Error
 	values := url.Values{}
 	values.Set("q", query)
 
-	url := fmt.Sprintf("%s%s?%s", fmt.Sprintf(baseUrl, service.domain), queryPath, values.Encode())
+	url := fmt.Sprintf("%s%s?%s", service.instanceUrl, queryPath, values.Encode())
 
 	var records []json.RawMessage
 
@@ -43,7 +43,7 @@ func (service *Service) query(query string, model interface{}) *errortools.Error
 			break
 		}
 
-		url = fmt.Sprintf("%s%s", fmt.Sprintf(baseUrl, service.domain), qr.NextRecordsUrl)
+		url = fmt.Sprintf("%s%s", service.instanceUrl, qr.NextRecordsUrl)
 	}
 
 	b, err := json.Marshal(records)

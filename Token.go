@@ -51,5 +51,7 @@ func (service *Service) getToken() (*Token, *errortools.Error) {
 		return nil, e
 	}
 
+	service.instanceUrl = token.InstanceUrl
+
 	return &token, nil
 }

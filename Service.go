@@ -10,7 +10,6 @@ import (
 const (
 	apiName   string = "HR2day"
 	loginUrl  string = "https://login.salesforce.com/services/oauth2/token"
-	baseUrl   string = "https://%s.cloudforce.com"
 	queryPath string = "/services/data/v56.0/query"
 )
 
@@ -23,10 +22,10 @@ type Service struct {
 	clientSecret  string
 	httpService   *go_http.Service
 	token         *Token
+	instanceUrl   string
 }
 
 type ServiceConfig struct {
-	Domain        string
 	Username      string
 	Password      string
 	SecurityToken string
@@ -44,27 +43,26 @@ func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
 		return nil, e
 	}
 
-	return &Service{
-		domain:        serviceConfig.Domain,
+	svc := Service{
 		username:      serviceConfig.Username,
 		password:      serviceConfig.Password,
 		securityToken: serviceConfig.SecurityToken,
 		clientId:      serviceConfig.ClientId,
 		clientSecret:  serviceConfig.ClientSecret,
 		httpService:   httpService,
-	}, nil
+	}
+
+	token, e := svc.getToken()
+	if e != nil {
+		return nil, e
+	}
+
+	svc.token = token
+
+	return &svc, nil
 }
 
 func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	if service.token == nil {
-		token, e := service.getToken()
-		if e != nil {
-			return nil, nil, e
-		}
-
-		service.token = token
-	}
-
 	// add access token to header
 	if requestConfig.NonDefaultHeaders == nil {
 		requestConfig.NonDefaultHeaders = &http.Header{}
