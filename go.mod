@@ -3,7 +3,7 @@ module github.com/leapforce-libraries/go_hr2day
 go 1.20
 
 require (
-	cloud.google.com/go v0.110.7
+	cloud.google.com/go v0.110.2
 	github.com/leapforce-libraries/go_errortools v0.0.0-20230306211452-9ccee0cdafe8
 	github.com/leapforce-libraries/go_http v0.0.0-20230420114702-86cc77fcf983
 	github.com/leapforce-libraries/go_utilities v0.0.0-20230817153055-9be6c31929fe

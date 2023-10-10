@@ -25,7 +25,7 @@ type Employee struct {
 	Hr2dayEmplNr          float64                   `json:"hr2d__EmplNr__c"`
 	Hr2dayEmployer        string                    `json:"hr2d__Employer__c"`
 	Hr2dayFirstName       string                    `json:"hr2d__FirstName__c"`
-	Hr2dayHireDate        *h_types.DateString       `json:"hr2d__HireDate__c	"`
+	Hr2dayHireDate        *h_types.DateString       `json:"hr2d__HireDate__c"`
 	Hr2dayInitials        string                    `json:"hr2d__Initials__c"`
 	Hr2dayNickname        string                    `json:"hr2d__Nickname__c"`
 	Hr2dayPhone2          string                    `json:"hr2d__Phone2__c"`
